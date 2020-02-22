@@ -6,7 +6,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-func ExampleNew_options() {
+func ExampleNewWithOptions_options() {
 	options := &middleware.Options{
 		// Overwrite the http metric name.
 		HTTPMetricName: "my_request_duration_seconds",
@@ -23,7 +23,7 @@ func ExampleNew_options() {
 		HTTPMetricDefaultLabelsNames: map[string]string{middleware.StatusCodeLabelName: "status"},
 	}
 
-	middleware := middleware.New(options)
+	middleware := middleware.NewWithOptions(options)
 
 	gin.Default().Use(middleware)
 }
@@ -35,7 +35,7 @@ func ExampleNew_registry() {
 		Registry: myCustomRegistry,
 	}
 
-	middleware := middleware.New(options)
+	middleware := middleware.NewWithOptions(options)
 
 	gin.Default().Use(middleware)
 }

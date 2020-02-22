@@ -64,7 +64,7 @@ func createRouterAndRegistry(options ...*Options) (*gin.Engine, *prometheus.Regi
 
 	opts.Registry = registry
 
-	router.Use(New(opts))
+	router.Use(NewWithOptions(opts))
 
 	router.GET("/param/value/:param", setOKResponse)
 	router.GET("/metrics", setOKResponse)

@@ -10,19 +10,23 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// New returns new gin middleware.
-func New(options ...*Options) gin.HandlerFunc {
-	opts := new(Options)
-	if len(options) > 0 {
-		opts = options[0]
-	}
+// New creates new gin middleware with the default options.
+func New() gin.HandlerFunc {
+	options := new(Options)
 
-	httpHistogramVec := createHistogram(opts)
+	handler := NewWithOptions(options)
 
-	opts.getRegistry().MustRegister(httpHistogramVec)
+	return handler
+}
+
+// NewWithOptions creates new gin middleware with the provided options.
+func NewWithOptions(options *Options) gin.HandlerFunc {
+	httpHistogramVec := createHistogram(options)
+
+	options.getRegistry().MustRegister(httpHistogramVec)
 
 	return func(c *gin.Context) {
-		if c.Request.URL.Path == opts.getMetricsPath() {
+		if c.Request.URL.Path == options.getMetricsPath() {
 			c.Next()
 			return
 		}
@@ -34,7 +38,7 @@ func New(options ...*Options) gin.HandlerFunc {
 		status := strconv.Itoa(c.Writer.Status())
 		elapsed := float64(time.Since(start)) / float64(time.Second)
 
-		labels := getHTTPMetricDefaultLabelsNames(c, status, opts)
+		labels := getHTTPMetricDefaultLabelsNames(c, status, options)
 
 		httpHistogramVec.With(labels).Observe(elapsed)
 	}
@@ -43,7 +47,7 @@ func New(options ...*Options) gin.HandlerFunc {
 func createHistogram(options *Options) *prometheus.HistogramVec {
 	histogramOptions := prometheus.HistogramOpts{
 		Name:    options.getHTTPMetricName(),
-		Help:    fmt.Sprintf("Duration summary of http responses labeled with: %s", strings.Join(options.getAllHTTPMetricDefaultLabelsNames(), ",")),
+		Help:    fmt.Sprintf("Duration summary of http responses labeled with: %s", strings.Join(options.getAllHTTPMetricDefaultLabelsNames(), ", ")),
 		Buckets: options.getHTTPMetricBuckets(),
 	}
 
