@@ -26,18 +26,18 @@ func TestOptionsSetMetricsPath(t *testing.T) {
 func TestOptionsLabels(t *testing.T) {
 	opts := new(Options)
 
-	opts.HTTPMetricLabelsOverride = map[string]string{
+	opts.HTTPMetricDefaultLabelsNames = map[string]string{
 		StatusCodeLabelName: "s",
 		MethodLabelName:     "m",
 	}
 
-	opts.CustomHTTPMetricLabels = map[string]string{"a": "a"}
+	opts.AdditionalHTTPMetricDefaultLabelsNames = map[string]string{"a": "a"}
 
 	expectedLabels := []string{"a", "m", "path", "s"}
 
 	sort.Strings(expectedLabels)
 
-	for i, actual := range opts.getAllHTTPMetricLabels() {
+	for i, actual := range opts.getAllHTTPMetricDefaultLabelsNames() {
 		assert.Equal(t, expectedLabels[i], actual)
 	}
 }

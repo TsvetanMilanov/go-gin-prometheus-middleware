@@ -13,8 +13,8 @@ const (
 )
 
 var (
-	defaultHTTPMetricBuckets     = []float64{0.1, 0.25, 0.5, 1, 2, 5, 10, 15, 20, 30}
-	defaultHTTPMetricLabelsNames = map[string]string{
+	defaultHTTPMetricBuckets                 = []float64{0.1, 0.25, 0.5, 1, 2, 5, 10, 15, 20, 30}
+	defaultHTTPMetricDefaultLabelsNamesNames = map[string]string{
 		StatusCodeLabelName: StatusCodeLabelName,
 		MethodLabelName:     MethodLabelName,
 		PathLabelName:       PathLabelName,
