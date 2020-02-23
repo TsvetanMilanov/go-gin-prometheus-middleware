@@ -3,6 +3,7 @@ Golang middleware for the gin framework
 
 [![GoDoc](https://godoc.org/github.com/TsvetanMilanov/go-gin-prometheus-middleware/middleware?status.svg)](https://godoc.org/github.com/TsvetanMilanov/go-gin-prometheus-middleware/middleware)
 ![Go](https://github.com/TsvetanMilanov/go-gin-prometheus-middleware/workflows/Go/badge.svg?branch=master)
+![Create Release](https://github.com/TsvetanMilanov/go-gin-prometheus-middleware/workflows/Create%20Release/badge.svg)
 
 ## Quick Start
 ```Go
