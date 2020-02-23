@@ -146,3 +146,31 @@ func TestMiddlewareCustomLabels(t *testing.T) {
 	assertHistogramMetric(t, metric, defaultLabelsLength+1, http.MethodGet, "/", "200")
 	assertLabel(t, metric.Label, "custom", "test_value")
 }
+
+func TestMiddlewareBlacklister(t *testing.T) {
+	blacklister := func(c *gin.Context) bool {
+		if c.Request.URL.Path == "/blacklist" {
+			return true
+		}
+
+		return false
+	}
+
+	opts := &Options{Blacklister: blacklister}
+	router, registry := createRouterAndRegistry(opts)
+
+	performRequest(router, http.MethodGet, "/blacklist")
+	performRequest(router, http.MethodGet, "/")
+
+	records, err := registry.Gather()
+
+	assert.NoError(t, err, "Gather should not throw error")
+	assert.Len(t, records, 1, "Gathered metrics length mismatch")
+
+	record := records[0]
+	assert.Equal(t, "http_request_duration_seconds", *record.Name)
+
+	assert.Len(t, record.Metric, 1, "Metrics length mismatch")
+
+	assertHistogramMetric(t, record.Metric[0], defaultLabelsLength, http.MethodGet, "/", "200")
+}

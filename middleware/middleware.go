@@ -35,12 +35,10 @@ func NewWithOptions(options *Options) gin.HandlerFunc {
 
 		c.Next()
 
-		status := strconv.Itoa(c.Writer.Status())
-		elapsed := float64(time.Since(start)) / float64(time.Second)
-
-		labels := getHTTPMetricDefaultLabelsNames(c, status, options)
-
-		httpHistogramVec.With(labels).Observe(elapsed)
+		blacklister := options.getBlacklister()
+		if blacklister == nil || !blacklister(c) {
+			storeMetric(c, httpHistogramVec, options, start)
+		}
 	}
 }
 
@@ -75,4 +73,13 @@ func getHTTPMetricDefaultLabelsNames(c *gin.Context, status string, options *Opt
 	}
 
 	return result
+}
+
+func storeMetric(c *gin.Context, httpHistogramVec *prometheus.HistogramVec, options *Options, start time.Time) {
+	status := strconv.Itoa(c.Writer.Status())
+	elapsed := float64(time.Since(start)) / float64(time.Second)
+
+	labels := getHTTPMetricDefaultLabelsNames(c, status, options)
+
+	httpHistogramVec.With(labels).Observe(elapsed)
 }

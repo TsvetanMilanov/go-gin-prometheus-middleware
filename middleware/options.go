@@ -16,7 +16,8 @@ type Options struct {
 	AdditionalHTTPMetricDefaultLabelsNames map[string]string
 	HTTPMetricDefaultLabelsNames           map[string]string
 
-	Registry prometheus.Registerer
+	Registry    prometheus.Registerer
+	Blacklister Blacklister
 }
 
 func (o *Options) getHTTPMetricName() string {
@@ -78,4 +79,8 @@ func (o *Options) getRegistry() prometheus.Registerer {
 	}
 
 	return o.Registry
+}
+
+func (o *Options) getBlacklister() Blacklister {
+	return o.Blacklister
 }

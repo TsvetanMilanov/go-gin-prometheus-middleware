@@ -28,13 +28,29 @@ func ExampleNewWithOptions_options() {
 	gin.Default().Use(middleware)
 }
 
-func ExampleNew_registry() {
+func ExampleNewWithOptions_registry() {
 	myCustomRegistry := prometheus.NewRegistry()
 	options := &middleware.Options{
 		// Use custom registry for the metrics.
 		Registry: myCustomRegistry,
 	}
 
+	middleware := middleware.NewWithOptions(options)
+
+	gin.Default().Use(middleware)
+}
+
+func ExampleNewWithOptions_blacklist() {
+	// Do not collect metrics for requests to the /blacklisted path.
+	blacklister := func(c *gin.Context) bool {
+		if c.Request.URL.Path == "/blacklisted" {
+			return true
+		}
+
+		return false
+	}
+
+	options := &middleware.Options{Blacklister: blacklister}
 	middleware := middleware.NewWithOptions(options)
 
 	gin.Default().Use(middleware)
